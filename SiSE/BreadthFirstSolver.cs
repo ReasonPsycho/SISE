@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace SiSE;
 
@@ -13,6 +14,8 @@ public class BreadthFirstSolver : IPuzzleSolver
 
     public Solution? Solve(BoardState puzzle, params object[] parameters)
     {
+        Debug.WriteLine("Solution - BreadthFirstSolver ");
+        Debug.WriteLine(puzzle.ToString());
         if (puzzle.IsGoal())
             return new Solution
             {
@@ -43,10 +46,10 @@ public class BreadthFirstSolver : IPuzzleSolver
             {
                 encounteredStates++;
                 parentsDictionary.Add(neighbor,current);
-                
                 if (!visited.Contains(neighbor))
                 {
                     processedStates++;
+                    Debug.WriteLine(neighbor.ToString());
                     if (neighbor.IsGoal())
                     {
                         var path = GetPath(neighbor,parentsDictionary);

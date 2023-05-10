@@ -29,7 +29,7 @@ public static class Program
             for (var i = 0; i < rows; i++)
             {
                 var row = sr.ReadLine().Split();
-                for (var j = 0; j < cols; j++) puzzle[i, j] = int.Parse(row[j]);
+                for (var j = 0; j < cols; j++) puzzle[j, i] = int.Parse(row[j]);
             }
 
             startState = new BoardState(puzzle);

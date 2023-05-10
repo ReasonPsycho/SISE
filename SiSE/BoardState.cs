@@ -1,11 +1,13 @@
-﻿namespace SiSE;
+﻿using System.Text;
+
+namespace SiSE;
 
 public struct BoardState
 {
     public int[,] Tiles { get; set; }
     public int Width { get; }
     public int Height { get; }
-    public (int x, int y) EmptyTile { get; set; }
+    public (int y, int x) EmptyTile { get; set; }
     public Direction? LastMove { get; set; }
 
     // Constructor to create a new board state with given width and height
@@ -17,12 +19,12 @@ public struct BoardState
         EmptyTile = GetEmptyTile();
     }
     
-    public BoardState(int[,] inputTiles,int x,int y,Direction direction)
+    public BoardState(int[,] inputTiles,int y,int x,Direction direction)
     {
         Width = inputTiles.GetLength(0);
         Height = inputTiles.GetLength(1);
         Tiles = inputTiles;
-        EmptyTile = (x,y);
+        EmptyTile = (y,x);
         LastMove = direction;
     }
 
@@ -34,7 +36,7 @@ public struct BoardState
 
         for (var x = 0; x < Width; x++)
         for (var y = 0; y < Height; y++)
-            if (Tiles[x, y] != other.Tiles[x, y])
+            if (Tiles[y, x] != other.Tiles[y, x])
                 return false;
 
         return true;
@@ -95,7 +97,7 @@ public struct BoardState
                 }
                 break;
             case Direction.Down:
-                if (emptyY < Height - 1)
+                if (moveY < Height - 1)
                 {
                     moveY++;
                 }
@@ -141,9 +143,7 @@ public struct BoardState
         for (var y = 0; y < Height; y++)
         for (var x = 0; x < Width; x++)
         {
-            if (Tiles[x, y] != x*Width + y) return false;
-
-            value++;
+            if (Tiles[x, y] != value++) return false;
         }
 
         return true;
@@ -154,12 +154,34 @@ public struct BoardState
    
             for (var y = 0; y < Height; y++)
             for (var x = 0; x < Width; x++)
-                if (Tiles[x, y] == 0)
+                if (Tiles[y, x] == 0)
                 {
-                    return (x, y);
+                    return (y, x);
                 }
             throw new InvalidOperationException("Board contains no empty space.");
     }
+    
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine($"Width: {Width}, Height: {Height}");
+        sb.AppendLine("Tiles:");
+        for (int y = 0; y < Height; y++)
+        {
+            for (int x = 0; x < Width; x++)
+            {
+                sb.Append($"{Tiles[x,y],3} ");
+            }
+            sb.AppendLine();
+        }
+
+
+        sb.AppendLine($"EmptyTile: ({EmptyTile.x}, {EmptyTile.y})");
+        sb.AppendLine($"LastMove: {LastMove}");
+        
+        return sb.ToString();
+    }
+
 }
 
 public enum Direction

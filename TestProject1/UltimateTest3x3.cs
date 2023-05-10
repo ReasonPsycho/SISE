@@ -47,6 +47,7 @@ public class UltimateTest3x3
     public void BFS()
     {
         string[] args = new string[] {"bfs","LRUD",orginalFile,outputFile,extraInformationFile};
+        Console.WriteLine("Test started...");
         SiSE.Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
