@@ -45,11 +45,13 @@ public class BreadthFirstSolver : IPuzzleSolver
             foreach (var neighbor in current.GetNeighbours(_neighborhoodOrder))
             {
                 encounteredStates++;
-                parentsDictionary.Add(neighbor,current);
                 if (!visited.Contains(neighbor))
                 {
+                    parentsDictionary.TryAdd(neighbor,current);
                     processedStates++;
+                    Debug.WriteLine("-----" + depth.ToString() + "-----");
                     Debug.WriteLine(neighbor.ToString());
+                    Debug.WriteLine(GetPath(neighbor,parentsDictionary));
                     if (neighbor.IsGoal())
                     {
                         var path = GetPath(neighbor,parentsDictionary);
@@ -58,7 +60,7 @@ public class BreadthFirstSolver : IPuzzleSolver
                             Path = path,
                             PathLength = path.Length,
                             EncounteredStates = encounteredStates,
-                            ProcessedStates = processedStates + 1,
+                            ProcessedStates = processedStates,
                             MaxDepth = maxDepth
                         };
                     }

@@ -37,7 +37,7 @@ public class UltimateTest
         }
     }
 
-    [Test]
+    [Test, Timeout(60000)]
     public void DFS()
     {
         string[] args = new string[] {"dfs","LRUD",orginalFile,outputFile,extraInformationFile};
@@ -45,7 +45,7 @@ public class UltimateTest
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
     
-    [Test]
+    [Test, Timeout(60000)]
     public void BFS()
     {
         string[] args = new string[] {"bfs","LRUD",orginalFile,outputFile,extraInformationFile};
@@ -54,7 +54,7 @@ public class UltimateTest
     }
 
     
-    [Test]
+    [Test, Timeout(60000)]
     public void AStar()
     {
         string[] args = new string[] {"astar","hamn",orginalFile,outputFile,extraInformationFile};

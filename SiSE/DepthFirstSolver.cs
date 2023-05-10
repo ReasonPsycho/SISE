@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace SiSE;
 
@@ -16,7 +17,7 @@ public class DepthFirstSolver : IPuzzleSolver
     public Solution? Solve(BoardState puzzle, params object[] parameters)
     {
         var solution = new Solution();
-        
+        Debug.WriteLine(puzzle.ToString());
         if (puzzle.IsGoal())
         {
             // If the initial state is the goal, return an empty path
@@ -59,7 +60,10 @@ public class DepthFirstSolver : IPuzzleSolver
             {
                 encounteredStates++;
                 // Store the parent of each neighbor
-                parentsDictionary.Add(neighbor,current);
+                parentsDictionary.TryAdd(neighbor,current);
+                Debug.WriteLine("-----" + depth.ToString() + "-----");
+                Debug.WriteLine(neighbor.ToString());
+                Debug.WriteLine(GetPath(neighbor,parentsDictionary));
                 if (neighbor.IsGoal())
                 {
                     var path = GetPath(neighbor,parentsDictionary);

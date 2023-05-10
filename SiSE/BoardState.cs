@@ -29,11 +29,16 @@ public struct BoardState
     }
 
     // Check if two board states are equal
-    public bool Equals(BoardState other)
+    public override bool Equals(object? obj)
     {
-        if (Width != other.Width || Height != other.Height)
-            return false;
+        if (obj == null || GetType() != obj.GetType())
+        {
+            return false; // objects are not of the same type
+        }
 
+        BoardState other = (BoardState)obj;
+
+        // Here we can compare the properties of both objects using the 'other' instance
         for (var x = 0; x < Width; x++)
         for (var y = 0; y < Height; y++)
             if (Tiles[y, x] != other.Tiles[y, x])

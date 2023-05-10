@@ -9,7 +9,7 @@ public class NextGoalStateTest
     string orginalFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "input.txt");
     string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "output.txt");
     string extraInformationFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "extraInformation.txt");
-    [SetUp]
+    [SetUp, Timeout(60000)]
     public void Setup()
     {
         List<string> lines = new List<string>();
@@ -37,7 +37,7 @@ public class NextGoalStateTest
         }
     }
 
-    [Test]
+    [Test, Timeout(60000)]
     public void DFS()
     {
         string[] args = new string[] {"dfs","LRUD",orginalFile,outputFile,extraInformationFile};
@@ -45,7 +45,7 @@ public class NextGoalStateTest
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
     
-    [Test]
+    [Test, Timeout(60000)]
     public void BFS()
     {
         string[] args = new string[] {"bfs","LRUD",orginalFile,outputFile,extraInformationFile};
@@ -54,7 +54,7 @@ public class NextGoalStateTest
     }
 
     
-    [Test]
+    [Test, Timeout(60000)]
     public void AStar()
     {
         string[] args = new string[] {"astar","hamn",orginalFile,outputFile,extraInformationFile};

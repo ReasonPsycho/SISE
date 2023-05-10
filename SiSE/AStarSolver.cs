@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 
 namespace SiSE;
 
@@ -26,6 +27,8 @@ public class AStarSolver : IPuzzleSolver
         var processedStates = 0;
         var maxDepth = 0;
 
+        Debug.WriteLine(puzzle.ToString());
+
         // Priority queue to store the states to be explored
         var priorityQueue = new PriorityQueue<BoardState, int>();
         // Set to keep track of the explored states
@@ -43,6 +46,9 @@ public class AStarSolver : IPuzzleSolver
             var current = priorityQueue.Dequeue();
             processedStates++;
 
+            Debug.WriteLine("-----" + cameFrom.ToString() + "-----");
+            Debug.WriteLine(current.ToString());
+            //Debug.WriteLine(GetPath(neighbor,parentsDictionary));
             if (current.IsGoal())
             {
                 StringBuilder solutionPath = new StringBuilder();

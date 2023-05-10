@@ -4,7 +4,7 @@ using SiSE;
 
 namespace TestProject1;
 
-public class UltimateTest3x3
+public class UltimateTest2x2
 {
     string orginalFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "input.txt");
     string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "output.txt");
@@ -13,18 +13,14 @@ public class UltimateTest3x3
     public void Setup()
     {
         List<string> lines = new List<string>();
-        string firstLine = "3 3";
+        string firstLine = "2 2";
         lines.Add(firstLine);
         
-        string secondLine = "3 1 2";
+        string secondLine = "3 2";
         lines.Add(secondLine);
 
-        string thirdLine = "4 5 0";
+        string thirdLine = "1 0";
         lines.Add(thirdLine);
-
-        string forthLine = "6 7 8";
-        lines.Add(forthLine);
-
 
         File.WriteAllLines(orginalFile, lines);
         using (File.Create(outputFile))
