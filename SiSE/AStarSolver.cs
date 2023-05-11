@@ -15,7 +15,7 @@ public class AStarSolver : IPuzzleSolver
 
     public AStarSolver(string heuristicMethod)
     {
-        if (heuristicMethod == "hamn")
+        if (heuristicMethod == "hamm")
             _heuristicMethod = HeuristicMethod.Hamming;
         else
             _heuristicMethod = HeuristicMethod.Manhattan;
@@ -44,14 +44,15 @@ public class AStarSolver : IPuzzleSolver
         while (priorityQueue.Count > 0)
         {
             var current = priorityQueue.Dequeue();
-            processedStates++;
 
-            Debug.WriteLine("-----" + cameFrom.ToString() + "-----");
+            Debug.WriteLine("-----" + cameFrom + "-----");
             Debug.WriteLine(current.ToString());
             //Debug.WriteLine(GetPath(neighbor,parentsDictionary));
+
+            processedStates++;
             if (current.IsGoal())
             {
-                StringBuilder solutionPath = new StringBuilder();
+                var solutionPath = new StringBuilder();
                 var previousState = new BoardState();
 
                 while (cameFrom.TryGetValue(current, out previousState))
@@ -66,7 +67,7 @@ public class AStarSolver : IPuzzleSolver
 
                 return new Solution
                 {
-                    Path = solutionPath.ToString().Reverse(), //CHECK Not sure about that tbh
+                    Path = solutionPath.ToString().Reverse(),
                     PathLength = solutionPath.Length,
                     EncounteredStates = encounteredStates,
                     ProcessedStates = processedStates,
@@ -77,27 +78,29 @@ public class AStarSolver : IPuzzleSolver
             if (!closedSet.Contains(current))
             {
                 closedSet.Add(current);
-                encounteredStates++;
 
                 foreach (var direction in Enum.GetValues<Direction>())
                 {
+                    encounteredStates++;
                     var neighbor = current.Move(direction);
-                    
-                    if(neighbor != null){
-                    if (neighbor.Equals(current)) continue;
 
-                    var tentativeGScore = gScore[current] + 1;
-
-                    if (!gScore.TryGetValue((BoardState)neighbor, out var neighborGScore)) neighborGScore = int.MaxValue;
-
-                    if (tentativeGScore < neighborGScore) //CHECK not sure if should be g + h buw thatever
+                    if (neighbor != null)
                     {
-                        cameFrom[(BoardState)neighbor] = current;
-                        gScore[(BoardState)neighbor] = tentativeGScore;
+                        if (neighbor.Equals(current)) continue;
 
-                        var fScore = tentativeGScore + Heuristic((BoardState)neighbor);
-                        priorityQueue.Enqueue((BoardState)neighbor, fScore);
-                    }
+                        var tentativeGScore = gScore[current] + 1;
+
+                        if (!gScore.TryGetValue((BoardState)neighbor, out var neighborGScore))
+                            neighborGScore = int.MaxValue;
+
+                        if (tentativeGScore < neighborGScore)
+                        {
+                            cameFrom[(BoardState)neighbor] = current;
+                            gScore[(BoardState)neighbor] = tentativeGScore;
+
+                            var fScore = tentativeGScore + Heuristic((BoardState)neighbor);
+                            priorityQueue.Enqueue((BoardState)neighbor, fScore);
+                        }
                     }
                 }
             }

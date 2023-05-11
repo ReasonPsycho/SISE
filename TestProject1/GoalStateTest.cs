@@ -16,16 +16,16 @@ public class GoalStateTest
         string firstLine = "4 4";
         lines.Add(firstLine);
         
-        string secondLine = "0 1 2 3";
+        string secondLine = "1 2 3 4";
         lines.Add(secondLine);
 
-        string thirdLine = "4 5 6 7";
+        string thirdLine = "5 6 7 8";
         lines.Add(thirdLine);
 
-        string forthLine = "8 9 10 11";
+        string forthLine = "9 10 11 12";
         lines.Add(forthLine);
 
-        string fifthLine = "12 13 14 15";
+        string fifthLine = "13 14 15 0";
         lines.Add(fifthLine);
 
         File.WriteAllLines(orginalFile, lines);

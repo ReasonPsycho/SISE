@@ -26,11 +26,11 @@ public class BreadthFirstSolver : IPuzzleSolver
                 MaxDepth = 0
             };
 
-        var queue = new Queue<(BoardState boardState,int depth)>();
+        var queue = new Queue<(BoardState boardState, int depth)>();
         var visited = new HashSet<BoardState>();
         var parentsDictionary = new Dictionary<BoardState, BoardState>(); // Map each state to its parent index
 
-        queue.Enqueue((puzzle , 0));
+        queue.Enqueue((puzzle, 0));
         visited.Add(puzzle);
         var maxDepth = 0;
         var encounteredStates = 1;
@@ -38,7 +38,7 @@ public class BreadthFirstSolver : IPuzzleSolver
 
         while (queue.Count > 0)
         {
-             (var current ,var depth)  = queue.Dequeue();
+            var (current, depth) = queue.Dequeue();
             visited.Add(current);
             maxDepth = Math.Max(maxDepth, depth);
 
@@ -47,17 +47,17 @@ public class BreadthFirstSolver : IPuzzleSolver
                 encounteredStates++;
                 if (!visited.Contains(neighbor))
                 {
-                    parentsDictionary.TryAdd(neighbor,current);
+                    parentsDictionary.TryAdd(neighbor, current);
                     processedStates++;
-                    Debug.WriteLine("-----" + depth.ToString() + "-----");
+                    Debug.WriteLine("-----" + depth + "-----");
                     Debug.WriteLine(neighbor.ToString());
-                    Debug.WriteLine(GetPath(neighbor,parentsDictionary));
+                    Debug.WriteLine(GetPath(neighbor, parentsDictionary));
                     if (neighbor.IsGoal())
                     {
-                        var path = GetPath(neighbor,parentsDictionary);
+                        var path = GetPath(neighbor, parentsDictionary);
                         return new Solution
                         {
-                            Path = path,
+                            Path = path.Reverse(),
                             PathLength = path.Length,
                             EncounteredStates = encounteredStates,
                             ProcessedStates = processedStates,
@@ -65,32 +65,25 @@ public class BreadthFirstSolver : IPuzzleSolver
                         };
                     }
 
-                    if (!queue.Any(item => Equals(item.boardState, neighbor)))
-                    {
-                        queue.Enqueue((neighbor,depth + 1));
-                    }
+                    if (!queue.Any(item => Equals(item.boardState, neighbor))) queue.Enqueue((neighbor, depth + 1));
                 }
             }
-
         }
 
         return null;
     }
-    
-    private string GetPath(BoardState endState,Dictionary<BoardState,BoardState> parentDictionary)
+
+    private string GetPath(BoardState endState, Dictionary<BoardState, BoardState> parentDictionary)
     {
-        StringBuilder stringBuilder = new StringBuilder();
-        BoardState currentState = endState;
+        var stringBuilder = new StringBuilder();
+        var currentState = endState;
         do
         {
             if (currentState.LastMove != null)
-            {
-                stringBuilder.Append(IPuzzleSolver.GetStringFromDirection((Direction)currentState.LastMove)); //Cannot be null thought
-            }
+                stringBuilder.Append(
+                    IPuzzleSolver.GetStringFromDirection((Direction)currentState.LastMove)); //Cannot be null thought
             else
-            {
                 break;
-            }
         } while (parentDictionary.TryGetValue(currentState, out currentState));
 
         return stringBuilder.ToString();

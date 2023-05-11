@@ -1,6 +1,4 @@
-﻿using System.Text;
-
-namespace SiSE;
+﻿namespace SiSE;
 
 public interface IPuzzleSolver
 {
@@ -22,7 +20,7 @@ public interface IPuzzleSolver
                 throw new ArgumentException("Invalid direction string", nameof(directionString));
         }
     }
-    
+
     public static string GetStringFromDirection(Direction direction)
     {
         switch (direction)
@@ -45,12 +43,10 @@ public interface IPuzzleSolver
         if (input.Length != 4)
             throw new ArgumentException("Invalid input string", nameof(input));
 
-        Direction[] directions = new Direction[4];
-        
-        for (int i = 0; i < 4; i++) { 
-            directions[i] = GetDirectionFromString(input.Substring(i,1));
-        }
-        
+        var directions = new Direction[4];
+
+        for (var i = 0; i < 4; i++) directions[i] = GetDirectionFromString(input.Substring(i, 1));
+
         return directions;
     }
 }

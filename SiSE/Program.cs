@@ -7,15 +7,12 @@ public static class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var algorithm = args[0]; // bfs, dfs, or astar
-        var heuristic = args[1]; // LRUD, hamn, or manh
+        var algorithm = args[0]; // bfs, dfs, or astr
+        var heuristic = args[1]; // LRUD, hamm, or manh
         var inputFile = args[2]; // name of input file
         var outputPath = args[3]; // name of output file for solution
         string? infoPath = null;
-        if (args.Length > 3)
-        {
-            infoPath = args[4];
-        }
+        if (args.Length > 3) infoPath = args[4];
 
         BoardState startState;
 
@@ -23,7 +20,7 @@ public static class Program
         using (var sr = File.OpenText(inputFile))
         {
             var firstLine = sr.ReadLine().Split();
-            var rows =  int.Parse(firstLine[0]);
+            var rows = int.Parse(firstLine[0]);
             var cols = int.Parse(firstLine[1]);
             var puzzle = new int[rows, cols];
             for (var i = 0; i < rows; i++)
@@ -38,7 +35,7 @@ public static class Program
 // initialize variables for search algorithm
         IPuzzleSolver solver;
         var timer = new Stopwatch();
-        var maxDepth = 50; // for dfs
+        var maxDepth = 30; // for dfs
 
 // perform search algorithm
         switch (algorithm)
@@ -49,7 +46,7 @@ public static class Program
             case "dfs":
                 solver = new DepthFirstSolver(heuristic, maxDepth);
                 break;
-            case "astar":
+            case "astr":
                 solver = new AStarSolver(heuristic);
                 break;
             default:
@@ -70,7 +67,6 @@ public static class Program
         }
 
         if (result != null && infoPath != null)
-        {
             // write extra information to output file
             using (var sw = File.CreateText(infoPath))
             {
@@ -80,6 +76,5 @@ public static class Program
                 sw.WriteLine(result?.MaxDepth);
                 sw.WriteLine(timer.ElapsedMilliseconds);
             }
-        }
     }
 }
