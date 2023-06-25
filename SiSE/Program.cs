@@ -74,7 +74,7 @@ public static class Program
                 sw.WriteLine(result?.EncounteredStates);
                 sw.WriteLine(result?.ProcessedStates);
                 sw.WriteLine(result?.MaxDepth);
-                sw.WriteLine(timer.ElapsedMilliseconds);
+                sw.WriteLine(((double)(timer.ElapsedTicks / 10L)/1000f).ToString("0.000"));
             }
     }
 }

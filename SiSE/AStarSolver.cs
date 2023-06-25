@@ -48,27 +48,24 @@ public class AStarSolver : IPuzzleSolver
             Debug.WriteLine("-----" + cameFrom + "-----");
             Debug.WriteLine(current.ToString());
             //Debug.WriteLine(GetPath(neighbor,parentsDictionary));
-
-            processedStates++;
+            
             if (current.IsGoal())
             {
-                var solutionPath = new StringBuilder();
+                var stringBuilder = new StringBuilder();
                 var previousState = new BoardState();
 
-                while (cameFrom.TryGetValue(current, out previousState))
-                {
-                    if (current.LastMove != null)
-                        solutionPath.Append(IPuzzleSolver.GetStringFromDirection((Direction)current.LastMove));
 
-                    current = previousState;
+                for (int i = 0; i < current.Moves.Count; i++)
+                {
+                    stringBuilder.Append(IPuzzleSolver.GetStringFromDirection(current.Moves[i])); //Cannot be null thought
                 }
 
                 maxDepth = cameFrom.Count;
 
                 return new Solution
                 {
-                    Path = solutionPath.ToString().Reverse(),
-                    PathLength = solutionPath.Length,
+                    Path = stringBuilder.ToString(),
+                    PathLength = stringBuilder.Length,
                     EncounteredStates = encounteredStates,
                     ProcessedStates = processedStates,
                     MaxDepth = maxDepth
@@ -78,14 +75,17 @@ public class AStarSolver : IPuzzleSolver
             if (!closedSet.Contains(current))
             {
                 closedSet.Add(current);
+                
+                
 
                 foreach (var direction in Enum.GetValues<Direction>())
                 {
-                    encounteredStates++;
+                    
                     var neighbor = current.Move(direction);
 
                     if (neighbor != null)
                     {
+                        encounteredStates++;
                         if (neighbor.Equals(current)) continue;
 
                         var tentativeGScore = gScore[current] + 1;
@@ -103,6 +103,8 @@ public class AStarSolver : IPuzzleSolver
                         }
                     }
                 }
+
+                processedStates++;
             }
         }
 

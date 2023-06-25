@@ -4,14 +4,11 @@ namespace SiSE;
 
 public struct BoardState : IEquatable<BoardState>
 {
-    private static int _nextId = 1; // Static variable to store the next available ID
-    public int Id { get; } // Unique ID for each instance
     public int[,] Tiles { get; }
-    public int TilesHashCode { get;  }
     public int Width { get; }
     public int Height { get; }
     public (int y, int x) EmptyTile { get; set; }
-    public Direction? LastMove { get; set; }
+    public List<Direction> Moves { get; set; }
 
     // Constructor to create a new board state with given width and height
     public BoardState(int[,] inputTiles)
@@ -19,33 +16,27 @@ public struct BoardState : IEquatable<BoardState>
         Width = inputTiles.GetLength(0);
         Height = inputTiles.GetLength(1);
         Tiles = inputTiles;
-        TilesHashCode = GetTilesHashCode();
         EmptyTile = GetEmptyTile();
-
-        // Assign the next available ID and increment the counter
-        Id = _nextId++;
+        Moves = new List<Direction>();
     }
 
-    public BoardState(int[,] inputTiles, int y, int x, Direction direction)
+    public BoardState(int[,] inputTiles, int y, int x, List<Direction> moves)
     {
         Width = inputTiles.GetLength(0);
         Height = inputTiles.GetLength(1);
         Tiles = inputTiles;
-        TilesHashCode = GetTilesHashCode();
         EmptyTile = (y, x);
-        LastMove = direction;
-
-        // Assign the next available ID and increment the counter
-        Id = _nextId++;
+        Moves = moves;
     }
 
-    public List<BoardState> GetNeighbours(Direction[] directions,Direction? lastMove)
+    public List<BoardState> GetNeighbours(Direction[] directions)
 
     {
         var neighbours = new List<BoardState>();
-        if (lastMove != null)
+        if (Moves.Count != 0)
         {
-            Direction? skip = IPuzzleSolver.Reverse(lastMove);
+            
+            Direction? skip = IPuzzleSolver.Reverse(Moves[Moves.Count - 1]);
         
             foreach (var direction in directions)
             {
@@ -110,8 +101,9 @@ public struct BoardState : IEquatable<BoardState>
         var newTiles = (int[,])Tiles.Clone();
         newTiles[emptyX, emptyY] = Tiles[moveX, moveY];
         newTiles[moveX, moveY] = 0;
-
-        return new BoardState(newTiles, moveX, moveY, direction);
+        var newMoves = Moves.ToList();
+        newMoves.Add(direction);
+        return new BoardState(newTiles, moveX, moveY, newMoves);
     }
 
     public bool IsGoal()
@@ -137,52 +129,37 @@ public struct BoardState : IEquatable<BoardState>
         throw new InvalidOperationException("Board contains no empty space.");
     }
     
-    public override bool Equals(object? obj)
+    public override bool Equals(object obj)
     {
-        return obj is BoardState other && Id == other.Id;
+        if (obj == null || GetType() != obj.GetType())
+            return false;
+
+        BoardState other = (BoardState)obj;
+        return GetHashCode() == other.GetHashCode();
     }
     
     public bool Equals(BoardState other)
     {
-        return Id == other.Id;;
+        return Moves.SequenceEqual(other.Moves);
     }
     
     public override int GetHashCode()
     {
-        return Id.GetHashCode();
-    }
-    
-    
-    public int GetTilesHashCode()
-    {
         unchecked
         {
             int hash = 17;
-        
-            for (int i = 0; i < Tiles.GetLength(0); i++)
-            {
-                for (int j = 0; j < Tiles.GetLength(1); j++)
-                {
-                    hash = hash * 23 + Tiles[i, j].GetHashCode();
-                }
-            }
 
+            foreach (var m in Moves)
+            {
+                hash = (int)(hash * 23 + m);
+            }
             return hash;
         }
     }
-    
-    public bool CheckIfTilesAreSame( BoardState other)
-    {
-        if (this.TilesHashCode != other.TilesHashCode) return false;
-           // All values are the same
-        return true;
-    }
 
-    
     public override string ToString()
     {
         var sb = new StringBuilder();
-        sb.AppendLine($"ID: {Id}");
         sb.AppendLine($"Width: {Width}, Height: {Height}");
         sb.AppendLine("Tiles:");
         for (var y = 0; y < Height; y++)
@@ -193,7 +170,7 @@ public struct BoardState : IEquatable<BoardState>
 
 
         sb.AppendLine($"EmptyTile: ({EmptyTile.x}, {EmptyTile.y})");
-        sb.AppendLine($"LastMove: {LastMove}");
+        sb.AppendLine($"LastMove: {Moves}");
 
         return sb.ToString();
     }

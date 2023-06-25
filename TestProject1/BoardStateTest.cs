@@ -38,24 +38,7 @@ public class BoardStateTests
         Assert.AreNotEqual(_boardState, _boardState2);
     }
   
-     
-    [Test]
-    public void AreTilesTheSame()
-    {
-        var _boardState = new BoardState(tiles);
-        var _boardState2 = new BoardState(tiles);
-
-        Assert.IsTrue(_boardState.CheckIfTilesAreSame(_boardState2));
-    }
     
-    [Test]
-    public void AreTilesDiffrent()
-    {
-        var _boardState = new BoardState(tiles);
-        var _boardState2 = new BoardState(tiles2);
-
-        Assert.IsFalse(_boardState.CheckIfTilesAreSame(_boardState2));
-    }
     
     /*
     [SetUp]
