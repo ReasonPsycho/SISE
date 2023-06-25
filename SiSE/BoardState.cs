@@ -2,9 +2,12 @@
 
 namespace SiSE;
 
-public struct BoardState
+public struct BoardState : IEquatable<BoardState>
 {
-    public int[,] Tiles { get; set; }
+    private static int _nextId = 1; // Static variable to store the next available ID
+    public int Id { get; } // Unique ID for each instance
+    public int[,] Tiles { get; }
+    public int TilesHashCode { get;  }
     public int Width { get; }
     public int Height { get; }
     public (int y, int x) EmptyTile { get; set; }
@@ -16,7 +19,11 @@ public struct BoardState
         Width = inputTiles.GetLength(0);
         Height = inputTiles.GetLength(1);
         Tiles = inputTiles;
+        TilesHashCode = GetTilesHashCode();
         EmptyTile = GetEmptyTile();
+
+        // Assign the next available ID and increment the counter
+        Id = _nextId++;
     }
 
     public BoardState(int[,] inputTiles, int y, int x, Direction direction)
@@ -24,51 +31,40 @@ public struct BoardState
         Width = inputTiles.GetLength(0);
         Height = inputTiles.GetLength(1);
         Tiles = inputTiles;
+        TilesHashCode = GetTilesHashCode();
         EmptyTile = (y, x);
         LastMove = direction;
+
+        // Assign the next available ID and increment the counter
+        Id = _nextId++;
     }
 
-    // Check if two board states are equal
-    public override bool Equals(object? obj)
-    {
-        if (obj == null || GetType() != obj.GetType()) return false; // objects are not of the same type
-
-        var other = (BoardState)obj;
-
-        // Here we can compare the properties of both objects using the 'other' instance
-        for (var x = 0; x < Width; x++)
-        for (var y = 0; y < Height; y++)
-            if (Tiles[y, x] != other.Tiles[y, x])
-                return false;
-
-        return true;
-    }
-
-    public List<BoardState> GetNeighbours(Direction[] directions)
+    public List<BoardState> GetNeighbours(Direction[] directions,Direction? lastMove)
 
     {
         var neighbours = new List<BoardState>();
-
-        foreach (var direction in directions)
+        if (lastMove != null)
         {
-            var state = Move(direction);
-            if (state != null) neighbours.Add((BoardState)state);
+            Direction? skip = IPuzzleSolver.Reverse(lastMove);
+        
+            foreach (var direction in directions)
+            {
+                if (direction != skip)
+                {
+                    var state = Move(direction);
+                    if (state != null) neighbours.Add((BoardState)state);
+                }
+            }
         }
-
-        return neighbours;
-    }
-
-    public List<BoardState> GetNeighbours()
-
-    {
-        Direction[] directions = { Direction.Down, Direction.Left, Direction.Right, Direction.Up };
-        var neighbours = new List<BoardState>();
-
-        foreach (var direction in directions)
+        else
         {
-            var state = Move(direction);
-            if (state != null) neighbours.Add((BoardState)state);
+            foreach (var direction in directions)
+            {
+                var state = Move(direction);
+                if (state != null) neighbours.Add((BoardState)state);
+            }
         }
+       
 
         return neighbours;
     }
@@ -140,28 +136,53 @@ public struct BoardState
                 return (y, x);
         throw new InvalidOperationException("Board contains no empty space.");
     }
-
+    
+    public override bool Equals(object? obj)
+    {
+        return obj is BoardState other && Id == other.Id;
+    }
+    
+    public bool Equals(BoardState other)
+    {
+        return Id == other.Id;;
+    }
+    
     public override int GetHashCode()
     {
-        unchecked // Overflow is fine, just wrap
+        return Id.GetHashCode();
+    }
+    
+    
+    public int GetTilesHashCode()
+    {
+        unchecked
         {
-            var hash = 17;
-            hash = hash * 23 + Width.GetHashCode();
-            hash = hash * 23 + Height.GetHashCode();
-            hash = hash * 23 + EmptyTile.x.GetHashCode();
-            hash = hash * 23 + EmptyTile.y.GetHashCode();
-
-            for (var x = 0; x < Width; x++)
-            for (var y = 0; y < Height; y++)
-                hash = hash * 23 + Tiles[y, x].GetHashCode();
+            int hash = 17;
+        
+            for (int i = 0; i < Tiles.GetLength(0); i++)
+            {
+                for (int j = 0; j < Tiles.GetLength(1); j++)
+                {
+                    hash = hash * 23 + Tiles[i, j].GetHashCode();
+                }
+            }
 
             return hash;
         }
     }
+    
+    public bool CheckIfTilesAreSame( BoardState other)
+    {
+        if (this.TilesHashCode != other.TilesHashCode) return false;
+           // All values are the same
+        return true;
+    }
 
+    
     public override string ToString()
     {
         var sb = new StringBuilder();
+        sb.AppendLine($"ID: {Id}");
         sb.AppendLine($"Width: {Width}, Height: {Height}");
         sb.AppendLine("Tiles:");
         for (var y = 0; y < Height; y++)

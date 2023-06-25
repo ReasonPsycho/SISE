@@ -32,7 +32,7 @@ public class BreadthFirstSolver : IPuzzleSolver
 
         queue.Enqueue((puzzle, 0));
         visited.Add(puzzle);
-        var maxDepth = 0;
+        var maxDepth = 1;
         var encounteredStates = 1;
         var processedStates = 1;
 
@@ -41,13 +41,12 @@ public class BreadthFirstSolver : IPuzzleSolver
             var (current, depth) = queue.Dequeue();
             visited.Add(current);
             maxDepth = Math.Max(maxDepth, depth);
-
-            foreach (var neighbor in current.GetNeighbours(_neighborhoodOrder))
+            foreach (var neighbor in  current.GetNeighbours(_neighborhoodOrder,current.LastMove))
             {
                 encounteredStates++;
-                if (!visited.Contains(neighbor))
+                if (!visited.Any(v => v.CheckIfTilesAreSame(neighbor)))
                 {
-                    parentsDictionary.TryAdd(neighbor, current);
+                    parentsDictionary.Add(neighbor, current);
                     processedStates++;
                     Debug.WriteLine("-----" + depth + "-----");
                     Debug.WriteLine(neighbor.ToString());

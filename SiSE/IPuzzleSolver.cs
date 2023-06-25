@@ -21,6 +21,25 @@ public interface IPuzzleSolver
         }
     }
 
+    public static Direction? Reverse(Direction? direction)
+    {
+        switch (direction)
+        {
+            case Direction.Up:
+                return Direction.Down;
+            case Direction.Down:
+                return Direction.Up;
+            case Direction.Right:
+                return Direction.Left;
+            case Direction.Left:
+                return Direction.Right;
+            case null:
+                return null;
+            default:
+                throw new ArgumentException("Invalid direction string", nameof(direction));
+        }
+    }
+    
     public static string GetStringFromDirection(Direction direction)
     {
         switch (direction)

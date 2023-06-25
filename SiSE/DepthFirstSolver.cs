@@ -30,26 +30,28 @@ public class DepthFirstSolver : IPuzzleSolver
             return solution;
         }
 
-        var egde = new Stack<(BoardState boardState, int depth)>();
+        var edge = new Stack<(BoardState boardState, int depth)>();
+        var visited = new HashSet<(BoardState, int depth)>();
         var parentsDictionary = new Dictionary<BoardState, BoardState>(); // Map each state to its parent index
 
-        var maxDepth = 0;
+        var maxDepth = 1;
         var encounteredStates = 1;
         var processedStates = 1;
 
-        egde.Push((puzzle, 0));
-
-        while (egde.Count > 0)
+        edge.Push((puzzle, 1));
+        visited.Add((puzzle, 1));
+        while (edge.Count > 0)
         {
-            var (current, depth) = egde.Pop();
+            var (current, depth) = edge.Pop();
             if (maxDepth < depth) maxDepth = depth;
 
-
-            foreach (var neighbor in current.GetNeighbours(_neighborhoodOrder))
+            var neighbors = current.GetNeighbours(_neighborhoodOrder,current.LastMove);
+            neighbors.Reverse(); // THE last shall be the first!
+            foreach (var neighbor in neighbors)
             {
                 encounteredStates++;
                 // Store the parent of each neighbor
-                parentsDictionary.TryAdd(neighbor, current);
+                parentsDictionary.Add(neighbor, current);
                 Debug.WriteLine("-----" + depth + "-----");
                 Debug.WriteLine(neighbor.ToString());
                 Debug.WriteLine(GetPath(neighbor, parentsDictionary));
@@ -58,15 +60,23 @@ public class DepthFirstSolver : IPuzzleSolver
                     var path = GetPath(neighbor, parentsDictionary);
                     solution.Path = path.Reverse();
                     solution.PathLength = path.Length;
-                    solution.MaxDepth = depth + 1;
+                    solution.MaxDepth = depth;
                     solution.EncounteredStates = encounteredStates;
                     solution.ProcessedStates = processedStates + 1;
                     return solution;
                 }
 
-                if (depth + 1 < _maxDepth)
-                    egde.Push((neighbor,
-                        depth + 1)); //It dosn't even check if it's aleready solved but whatever it works
+                if (depth < _maxDepth)
+                {
+                    if (!visited.Any(v => v.Item1.CheckIfTilesAreSame(neighbor)))
+                    {
+                        visited.Add((neighbor,
+                            depth + 1));
+                        edge.Push((neighbor,
+                            depth + 1)); 
+                    }
+                }
+                  
                 processedStates++;
             }
         }

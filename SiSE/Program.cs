@@ -35,7 +35,7 @@ public static class Program
 // initialize variables for search algorithm
         IPuzzleSolver solver;
         var timer = new Stopwatch();
-        var maxDepth = 30; // for dfs
+        var maxDepth = 20; // for dfs
 
 // perform search algorithm
         switch (algorithm)

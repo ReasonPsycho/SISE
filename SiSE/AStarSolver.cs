@@ -23,9 +23,9 @@ public class AStarSolver : IPuzzleSolver
 
     public Solution? Solve(BoardState puzzle, params object[] parameters)
     {
-        var encounteredStates = 0;
-        var processedStates = 0;
-        var maxDepth = 0;
+        var encounteredStates = 1;
+        var processedStates = 1;
+        var maxDepth = 1;
 
         Debug.WriteLine(puzzle.ToString());
 
