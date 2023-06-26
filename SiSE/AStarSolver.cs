@@ -30,13 +30,12 @@ public class AStarSolver : IPuzzleSolver
         Debug.WriteLine(puzzle.ToString());
 
         // Priority queue to store the states to be explored
-        var priorityQueue = new PriorityQueue<BoardState, int>();
+        var priorityQueue = new PriorityQueue<BoardStateSubclass, int>();
         // Set to keep track of the explored states
-        var closedSet = new HashSet<BoardState>();
+        var closedSet = new HashSet<BoardStateSubclass>();
         // Dictionary to keep track of the cost to reach a state from the initial state
-        var gScore = new Dictionary<BoardState, int>();
-        priorityQueue.Enqueue(puzzle, Heuristic(puzzle));
-        gScore[puzzle] = 0;
+        var states = new List<BoardStateSubclass>();
+        priorityQueue.Enqueue((BoardStateSubclass)puzzle, Heuristic(puzzle));
 
         while (priorityQueue.Count > 0)
         {
@@ -70,18 +69,30 @@ public class AStarSolver : IPuzzleSolver
                 encounteredStates += neighbours.Count();
                 foreach (var neighbor in neighbours)
                 {
-                    var tentativeGScore = gScore[current] + 1;
-
-                    if (!gScore.TryGetValue(neighbor, out var neighborGScore))
-                        neighborGScore = int.MaxValue;
-
-                    if (tentativeGScore < neighborGScore)
+                    var tentativeGScore = current.Moves.Count  + 1;
+                    var neighborFScore = 0;
+                    if (states.Contains((BoardStateSubclass)neighbor))
                     {
-                        gScore[neighbor] = tentativeGScore;
-
-                        var fScore = tentativeGScore + Heuristic(neighbor);
-                        priorityQueue.Enqueue(neighbor, fScore);
+                        var index = states.FindIndex(element => element.Equals((BoardStateSubclass)neighbor));
+                        var counterPart = states[index];
+                        if (neighbor.Moves.Count < counterPart!.Moves.Count())
+                        {
+                            var cast = (BoardStateSubclass)neighbor;
+                            cast.fCost = tentativeGScore + Heuristic(neighbor);
+                            states[index] = cast;
+                            neighborFScore = cast.fCost;
+                        }
+               
                     }
+                    else
+                    {
+                        var cast = (BoardStateSubclass)neighbor;
+                        cast.fCost = tentativeGScore + Heuristic(neighbor);
+                        states.Add(cast);
+                        neighborFScore = cast.fCost;
+                    }
+                    //var fScore = tentativeGScore + Heuristic(neighbor);
+                    priorityQueue.Enqueue((BoardStateSubclass)neighbor, neighborFScore);
                 }
                 processedStates++;
             }

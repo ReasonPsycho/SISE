@@ -2,11 +2,11 @@
 
 namespace SiSE;
 
-public struct BoardState : IEquatable<BoardState>
+public struct BoardState 
 {
-    public int[,] Tiles { get; }
-    public int Width { get; }
-    public int Height { get; }
+    public int[,] Tiles { get; set;}
+    public int Width { get;set; }
+    public int Height { get; set;}
     public int? HashCode;
     public (int y, int x) EmptyTile { get; set; }
     public List<Direction> Moves { get; set; }
@@ -208,6 +208,7 @@ public struct BoardState : IEquatable<BoardState>
 
         return sb.ToString();
     }
+    
 }
 
 public enum Direction
