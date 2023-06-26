@@ -35,9 +35,6 @@ public class AStarSolver : IPuzzleSolver
         var closedSet = new HashSet<BoardState>();
         // Dictionary to keep track of the cost to reach a state from the initial state
         var gScore = new Dictionary<BoardState, int>();
-        // Dictionary to keep track of the previous state in the optimal path
-        var cameFrom = new Dictionary<BoardState, BoardState>();
-
         priorityQueue.Enqueue(puzzle, Heuristic(puzzle));
         gScore[puzzle] = 0;
 
@@ -45,27 +42,21 @@ public class AStarSolver : IPuzzleSolver
         {
             var current = priorityQueue.Dequeue();
 
-            Debug.WriteLine("-----" + cameFrom + "-----");
+            Debug.WriteLine("-----" + current.GetPath() + "-----");
             Debug.WriteLine(current.ToString());
             //Debug.WriteLine(GetPath(neighbor,parentsDictionary));
-            
+
+            if (current.Moves.Count > maxDepth)
+            {
+                maxDepth = current.Moves.Count;
+            }
+
             if (current.IsGoal())
             {
-                var stringBuilder = new StringBuilder();
-                var previousState = new BoardState();
-
-
-                for (int i = 0; i < current.Moves.Count; i++)
-                {
-                    stringBuilder.Append(IPuzzleSolver.GetStringFromDirection(current.Moves[i])); //Cannot be null thought
-                }
-
-                maxDepth = cameFrom.Count;
-
                 return new Solution
                 {
-                    Path = stringBuilder.ToString(),
-                    PathLength = stringBuilder.Length,
+                    Path = current.GetPath(),
+                    PathLength = current.Moves.Count(),
                     EncounteredStates = encounteredStates,
                     ProcessedStates = processedStates,
                     MaxDepth = maxDepth
@@ -75,35 +66,23 @@ public class AStarSolver : IPuzzleSolver
             if (!closedSet.Contains(current))
             {
                 closedSet.Add(current);
-                
-                
-
-                foreach (var direction in Enum.GetValues<Direction>())
+                var neighbours = current.GetNeighbours();
+                encounteredStates += neighbours.Count();
+                foreach (var neighbor in neighbours)
                 {
-                    
-                    var neighbor = current.Move(direction);
+                    var tentativeGScore = gScore[current] + 1;
 
-                    if (neighbor != null)
+                    if (!gScore.TryGetValue(neighbor, out var neighborGScore))
+                        neighborGScore = int.MaxValue;
+
+                    if (tentativeGScore < neighborGScore)
                     {
-                        encounteredStates++;
-                        if (neighbor.Equals(current)) continue;
+                        gScore[neighbor] = tentativeGScore;
 
-                        var tentativeGScore = gScore[current] + 1;
-
-                        if (!gScore.TryGetValue((BoardState)neighbor, out var neighborGScore))
-                            neighborGScore = int.MaxValue;
-
-                        if (tentativeGScore < neighborGScore)
-                        {
-                            cameFrom[(BoardState)neighbor] = current;
-                            gScore[(BoardState)neighbor] = tentativeGScore;
-
-                            var fScore = tentativeGScore + Heuristic((BoardState)neighbor);
-                            priorityQueue.Enqueue((BoardState)neighbor, fScore);
-                        }
+                        var fScore = tentativeGScore + Heuristic(neighbor);
+                        priorityQueue.Enqueue(neighbor, fScore);
                     }
                 }
-
                 processedStates++;
             }
         }

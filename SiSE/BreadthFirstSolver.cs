@@ -59,8 +59,14 @@ public class BreadthFirstSolver : IPuzzleSolver
                     };
                 }
 
-                if (visited.Contains(neighbor) || queue.Contains(neighbor)) continue;
-                queue.Enqueue(neighbor);
+                if (!visited.Contains(neighbor))
+                {
+                    if (!queue.Contains(neighbor))
+                    {
+                        queue.Enqueue(neighbor);
+                    }
+                }
+
             }
             processedStates++;
         }

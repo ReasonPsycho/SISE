@@ -7,6 +7,7 @@ public struct BoardState : IEquatable<BoardState>
     public int[,] Tiles { get; }
     public int Width { get; }
     public int Height { get; }
+    public int? HashCode;
     public (int y, int x) EmptyTile { get; set; }
     public List<Direction> Moves { get; set; }
 
@@ -18,15 +19,17 @@ public struct BoardState : IEquatable<BoardState>
         Tiles = inputTiles;
         EmptyTile = GetEmptyTile();
         Moves = new List<Direction>();
+        HashCode = GetHashCode();
     }
 
-    public BoardState(int[,] inputTiles, int y, int x, List<Direction> moves)
+    public BoardState(int[,] inputTiles, int y, int x, List<Direction> moves, int? hashCode)
     {
         Width = inputTiles.GetLength(0);
         Height = inputTiles.GetLength(1);
         Tiles = inputTiles;
         EmptyTile = (y, x);
         Moves = moves;
+        HashCode = hashCode;
     }
 
     public List<BoardState> GetNeighbours(Direction[] directions)
@@ -35,9 +38,8 @@ public struct BoardState : IEquatable<BoardState>
         var neighbours = new List<BoardState>();
         if (Moves.Count != 0)
         {
-            
             Direction? skip = IPuzzleSolver.Reverse(Moves[Moves.Count - 1]);
-        
+
             foreach (var direction in directions)
             {
                 if (direction != skip)
@@ -55,8 +57,20 @@ public struct BoardState : IEquatable<BoardState>
                 if (state != null) neighbours.Add((BoardState)state);
             }
         }
-       
 
+
+        return neighbours;
+    }
+
+    public List<BoardState> GetNeighbours()
+
+    {
+        var neighbours = new List<BoardState>();
+        foreach (var direction in Enum.GetValues<Direction>())
+        {
+            var state = Move(direction);
+            if (state != null) neighbours.Add((BoardState)state);
+        }
         return neighbours;
     }
 
@@ -103,7 +117,8 @@ public struct BoardState : IEquatable<BoardState>
         newTiles[moveX, moveY] = 0;
         var newMoves = Moves.ToList();
         newMoves.Add(direction);
-        return new BoardState(newTiles, moveX, moveY, newMoves);
+        int? newHashCode = (int?)(HashCode * 23 + direction);
+        return new BoardState(newTiles, moveX, moveY, newMoves, newHashCode);
     }
 
     public bool IsGoal()
@@ -128,7 +143,7 @@ public struct BoardState : IEquatable<BoardState>
                 return (y, x);
         throw new InvalidOperationException("Board contains no empty space.");
     }
-    
+
     public override bool Equals(object obj)
     {
         if (obj == null || GetType() != obj.GetType())
@@ -137,24 +152,43 @@ public struct BoardState : IEquatable<BoardState>
         BoardState other = (BoardState)obj;
         return GetHashCode() == other.GetHashCode();
     }
-    
+
     public bool Equals(BoardState other)
     {
         return Moves.SequenceEqual(other.Moves);
     }
-    
+
     public override int GetHashCode()
     {
-        unchecked
+        if (HashCode == null)
         {
-            int hash = 17;
-
-            foreach (var m in Moves)
+            unchecked
             {
-                hash = (int)(hash * 23 + m);
+                int hash = 17;
+
+                foreach (var m in Moves)
+                {
+                    hash = (int)(hash * 23 + m);
+                }
+
+                return hash;
             }
-            return hash;
         }
+        else
+        {
+            return (int)HashCode;
+        }
+    }
+
+    public string GetPath()
+    {
+        var stringBuilder = new StringBuilder();
+        for (int i = 0; i < Moves.Count; i++)
+        {
+            stringBuilder.Append(IPuzzleSolver.GetStringFromDirection(Moves[i])); //Cannot be null thought
+        }
+
+        return stringBuilder.ToString();
     }
 
     public override string ToString()
