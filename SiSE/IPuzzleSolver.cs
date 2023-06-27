@@ -2,7 +2,7 @@
 
 public interface IPuzzleSolver
 {
-    Solution? Solve(BoardState puzzle, params object[] parameters);
+    Solution? Solve(GameState puzzle, params object[] parameters);
 
     public static Direction GetDirectionFromString(string directionString)
     {

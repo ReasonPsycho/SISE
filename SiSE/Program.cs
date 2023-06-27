@@ -14,7 +14,7 @@ public static class Program
         string? infoPath = null;
         if (args.Length > 3) infoPath = args[4];
 
-        BoardState startState;
+        GameState startState;
 
         // read input file
         using (var sr = File.OpenText(inputFile))
@@ -29,7 +29,7 @@ public static class Program
                 for (var j = 0; j < cols; j++) puzzle[j, i] = int.Parse(row[j]);
             }
 
-            startState = new BoardState(puzzle);
+            startState = new GameState(puzzle);
         }
 
 // initialize variables for search algorithm

@@ -12,7 +12,7 @@ public class BreadthFirstSolver : IPuzzleSolver
         _neighborhoodOrder = IPuzzleSolver.GetDirectionsOrder(neighborhoodOrder);
     }
 
-    public Solution? Solve(BoardState puzzle, params object[] parameters)
+    public Solution? Solve(GameState puzzle, params object[] parameters)
     {
         Debug.WriteLine("Solution - BreadthFirstSolver ");
         Debug.WriteLine(puzzle.ToString());
@@ -26,8 +26,8 @@ public class BreadthFirstSolver : IPuzzleSolver
                 MaxDepth = 0
             };
 
-        var queue = new Queue<BoardState>();
-        var visited = new HashSet<BoardState>();
+        var queue = new Queue<GameState>();
+        var visited = new HashSet<GameState>();
 
         queue.Enqueue(puzzle);
         var maxDepth = 0;
@@ -74,7 +74,7 @@ public class BreadthFirstSolver : IPuzzleSolver
         return null;
     }
 
-    private string GetPath(BoardState endState)
+    private string GetPath(GameState endState)
     {
         var stringBuilder = new StringBuilder();
         for (int i = 0; i < endState.Moves.Count; i++)

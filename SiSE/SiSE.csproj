@@ -17,6 +17,9 @@
         <Compile Update="AStarSolver.cs">
             <DependentUpon>IPuzzleSolver.cs</DependentUpon>
         </Compile>
+        <Compile Update="BoardState.cs">
+          <DependentUpon>GameState.cs</DependentUpon>
+        </Compile>
     </ItemGroup>
 
 </Project>

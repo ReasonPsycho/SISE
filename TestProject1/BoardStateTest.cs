@@ -32,8 +32,8 @@ public class BoardStateTests
     [Test]
     public void AreEqualAndSame()
     {
-        var _boardState = new BoardState(tiles);
-        var _boardState2 = new BoardState(tiles);
+        var _boardState = new GameState(tiles);
+        var _boardState2 = new GameState(tiles);
 
         Assert.AreNotEqual(_boardState, _boardState2);
     }

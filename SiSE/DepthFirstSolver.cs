@@ -14,11 +14,11 @@ public class DepthFirstSolver : IPuzzleSolver
         _maxDepth = maxDepth;
     }
 
-    public Solution? Solve(BoardState puzzle, params object[] parameters)
+    public Solution? Solve(GameState puzzle, params object[] parameters)
     {
         var solution = new Solution();
-        var edge = new Stack<BoardState>();
-        var visited = new HashSet<BoardState>();
+        var edge = new Stack<GameState>();
+        var visited = new HashSet<GameState>();
         var maxDepth = 0;
         var encounteredStates = 1;
         var processedStates = 0;

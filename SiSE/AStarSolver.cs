@@ -21,20 +21,20 @@ public class AStarSolver : IPuzzleSolver
             _heuristicMethod = HeuristicMethod.Manhattan;
     }
 
-    public Solution? Solve(BoardState puzzle, params object[] parameters)
+    public Solution? Solve(GameState puzzle, params object[] parameters)
     {
         var encounteredStates = 1;
-        var processedStates = 1;
-        var maxDepth = 1;
+        var processedStates = 0;
+        var maxDepth = 0;
 
         Debug.WriteLine(puzzle.ToString());
 
         // Priority queue to store the states to be explored
-        var priorityQueue = new PriorityQueue<BoardState, int>();
+        var priorityQueue = new PriorityQueue<GameState, int>();
         // Set to keep track of the explored states
         var closedSet = new HashSet<BoardState>();
         // Dictionary to keep track of the cost to reach a state from the initial state
-        priorityQueue.Enqueue(puzzle, Heuristic(puzzle));
+        priorityQueue.Enqueue(puzzle, Heuristic(puzzle.BoardState));
 
         while (priorityQueue.Count > 0)
         {
@@ -61,16 +61,16 @@ public class AStarSolver : IPuzzleSolver
                 };
             }
 
-            if (!closedSet.Contains(current))
+            if (!closedSet.Contains(current.BoardState))
             {
-                closedSet.Add(current);
+                closedSet.Add(current.BoardState);
                 var neighbours = current.GetNeighbours();
                 foreach (var neighbor in neighbours)
                 {
-                    if (!closedSet.Contains(current))
+                    if (!closedSet.Contains(neighbor.BoardState))
                     {
                         encounteredStates++;
-                        var fScore = currentMoves + 1 + Heuristic(neighbor);
+                        var fScore = currentMoves + 1 + Heuristic(neighbor.BoardState);
                         priorityQueue.Enqueue(neighbor, fScore);
                     }
                 }
