@@ -34,21 +34,19 @@ public class AStarSolver : IPuzzleSolver
         // Set to keep track of the explored states
         var closedSet = new HashSet<BoardState>();
         // Dictionary to keep track of the cost to reach a state from the initial state
-        var gScore = new Dictionary<BoardState, int>();
         priorityQueue.Enqueue(puzzle, Heuristic(puzzle));
-        gScore[puzzle] = 0;
 
         while (priorityQueue.Count > 0)
         {
             var current = priorityQueue.Dequeue();
-
+            var currentMoves = current.Moves.Count();
             Debug.WriteLine("-----" + current.GetPath() + "-----");
             Debug.WriteLine(current.ToString());
             //Debug.WriteLine(GetPath(neighbor,parentsDictionary));
 
-            if (current.Moves.Count > maxDepth)
+            if (currentMoves > maxDepth)
             {
-                maxDepth = current.Moves.Count;
+                maxDepth = currentMoves;
             }
 
             if (current.IsGoal())
@@ -67,22 +65,16 @@ public class AStarSolver : IPuzzleSolver
             {
                 closedSet.Add(current);
                 var neighbours = current.GetNeighbours();
-                encounteredStates += neighbours.Count();
                 foreach (var neighbor in neighbours)
                 {
-                    var tentativeGScore = gScore[current] + 1;
-
-                    if (!gScore.TryGetValue(neighbor, out var neighborGScore))
-                        neighborGScore = int.MaxValue;
-
-                    if (tentativeGScore < neighborGScore)
+                    if (!closedSet.Contains(current))
                     {
-                        gScore[neighbor] = tentativeGScore;
-
-                        var fScore = tentativeGScore + Heuristic(neighbor);
+                        encounteredStates++;
+                        var fScore = currentMoves + 1 + Heuristic(neighbor);
                         priorityQueue.Enqueue(neighbor, fScore);
                     }
                 }
+
                 processedStates++;
             }
         }
