@@ -30,7 +30,7 @@ public class DepthFirstSolver : IPuzzleSolver
             var currentDepth = current.Moves.Count;
             if (maxDepth < current.Moves.Count) maxDepth = currentDepth;
             
-            if (current.IsGoal())
+            if (current.BoardState.IsGoal())
             {
                 var path = current.GetPath();
                 solution.Path = path;

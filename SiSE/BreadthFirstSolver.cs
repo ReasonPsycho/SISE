@@ -16,7 +16,7 @@ public class BreadthFirstSolver : IPuzzleSolver
     {
         Debug.WriteLine("Solution - BreadthFirstSolver ");
         Debug.WriteLine(puzzle.ToString());
-        if (puzzle.IsGoal())
+        if (puzzle.BoardState.IsGoal())
             return new Solution
             {
                 Path = "",
@@ -46,7 +46,7 @@ public class BreadthFirstSolver : IPuzzleSolver
                 Debug.WriteLine(neighbor.ToString());
                 Debug.WriteLine(GetPath(neighbor));
                 maxDepth = Math.Max(maxDepth, neighbor.Moves.Count);
-                if (neighbor.IsGoal())
+                if (neighbor.BoardState.IsGoal())
                 {
                     var path = GetPath(neighbor);
                     return new Solution

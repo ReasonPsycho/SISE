@@ -6,7 +6,6 @@ public struct GameState : IEquatable<GameState>
 {
     public BoardState BoardState;
     public int? HashCode;
-    public (int y, int x) EmptyTile { get; set; }
     public List<Direction> Moves { get; set; }
 
     // Constructor to create a new board state with given width and height
@@ -15,7 +14,7 @@ public struct GameState : IEquatable<GameState>
         BoardState.Width = inputTiles.GetLength(0);
         BoardState.Height = inputTiles.GetLength(1);
         BoardState.Tiles = inputTiles;
-        EmptyTile = GetEmptyTile();
+        BoardState.EmptyTile = BoardState.GetEmptyTile();
         Moves = new List<Direction>();
         HashCode = GetHashCode();
     }
@@ -25,7 +24,7 @@ public struct GameState : IEquatable<GameState>
         BoardState.Width = inputTiles.GetLength(0);
         BoardState.Height = inputTiles.GetLength(1);
         BoardState.Tiles = inputTiles;
-        EmptyTile = (y, x);
+        BoardState.EmptyTile = (y, x);
         Moves = moves;
         HashCode = hashCode;
     }
@@ -75,7 +74,7 @@ public struct GameState : IEquatable<GameState>
     // Move a tile in the given direction (if possible), returning a new board state
     public GameState? Move(Direction direction)
     {
-        (var emptyX, var emptyY) = EmptyTile;
+        (var emptyX, var emptyY) = BoardState.EmptyTile;
 
         // Check if the move is possible
         var moveX = emptyX;
@@ -118,29 +117,7 @@ public struct GameState : IEquatable<GameState>
         int? newHashCode = (int?)(HashCode * 23 + direction);
         return new GameState(newTiles, moveX, moveY, newMoves, newHashCode);
     }
-
-    public bool IsGoal()
-    {
-        var value = 1;
-        var max = BoardState.Height * BoardState.Width;
-        for (var y = 0; y < BoardState.Height; y++)
-        for (var x = 0; x < BoardState.Width; x++)
-        {
-            if (BoardState.Tiles[x, y] != value) return false;
-            value = (value + 1) % max;
-        }
-
-        return true;
-    }
-
-    private (int x, int y) GetEmptyTile()
-    {
-        for (var y = 0; y < BoardState.Height; y++)
-        for (var x = 0; x < BoardState.Width; x++)
-            if (BoardState.Tiles[y, x] == 0)
-                return (y, x);
-        throw new InvalidOperationException("Board contains no empty space.");
-    }
+    
 
     public override bool Equals(object obj)
     {
@@ -201,7 +178,7 @@ public struct GameState : IEquatable<GameState>
         }
 
 
-        sb.AppendLine($"EmptyTile: ({EmptyTile.x}, {EmptyTile.y})");
+        sb.AppendLine($"EmptyTile: ({BoardState.EmptyTile.x}, {BoardState.EmptyTile.y})");
         sb.AppendLine($"LastMove: {Moves}");
 
         return sb.ToString();

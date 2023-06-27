@@ -1,121 +1,131 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
-namespace SiSE;
-
-public enum HeuristicMethod
+namespace SiSE
 {
-    Hamming,
-    Manhattan
-}
-
-public class AStarSolver : IPuzzleSolver
-{
-    private readonly HeuristicMethod _heuristicMethod;
-
-    public AStarSolver(string heuristicMethod)
+    public enum HeuristicMethod
     {
-        if (heuristicMethod == "hamm")
-            _heuristicMethod = HeuristicMethod.Hamming;
-        else
-            _heuristicMethod = HeuristicMethod.Manhattan;
+        Hamming,
+        Manhattan
     }
 
-    public Solution? Solve(GameState puzzle, params object[] parameters)
+    public class AStarSolver : IPuzzleSolver
     {
-        var encounteredStates = 1;
-        var processedStates = 0;
-        var maxDepth = 0;
+        private readonly HeuristicMethod _heuristicMethod;
+        private Dictionary<Node, Node> parentDictionary;
 
-        Debug.WriteLine(puzzle.ToString());
-
-        // Priority queue to store the states to be explored
-        var priorityQueue = new PriorityQueue<GameState, int>();
-        // Set to keep track of the explored states
-        var closedSet = new HashSet<BoardState>();
-        // Dictionary to keep track of the cost to reach a state from the initial state
-        priorityQueue.Enqueue(puzzle, Heuristic(puzzle.BoardState));
-
-        while (priorityQueue.Count > 0)
+        public AStarSolver(string heuristicMethod)
         {
-            var current = priorityQueue.Dequeue();
-            var currentMoves = current.Moves.Count();
-            Debug.WriteLine("-----" + current.GetPath() + "-----");
-            Debug.WriteLine(current.ToString());
-            //Debug.WriteLine(GetPath(neighbor,parentsDictionary));
+            if (heuristicMethod == "hamm")
+                _heuristicMethod = HeuristicMethod.Hamming;
+            else
+                _heuristicMethod = HeuristicMethod.Manhattan;
+        }
 
-            if (currentMoves > maxDepth)
-            {
-                maxDepth = currentMoves;
-            }
+        public Solution? Solve(GameState puzzle, params object[] parameters)
+        {
+            var encounteredStates = 1;
+            var processedStates = 0;
+            var maxDepth = 0;
 
-            if (current.IsGoal())
+            var priorityQueue = new List<Node>();
+            parentDictionary = new Dictionary<Node, Node>();
+            var closedSet = new HashSet<Node>();
+            var initialNode = new Node(puzzle.BoardState.Tiles);
+
+            priorityQueue.Add(initialNode);
+
+            while (priorityQueue.Count > 0)
             {
-                return new Solution
+                var current = priorityQueue.Min();
+                var currentDepth = current.GScore;
+
+                closedSet.Add(current);
+                priorityQueue.Remove(current);
+                processedStates++;
+
+                if (currentDepth > maxDepth)
                 {
-                    Path = current.GetPath(),
-                    PathLength = current.Moves.Count(),
-                    EncounteredStates = encounteredStates,
-                    ProcessedStates = processedStates,
-                    MaxDepth = maxDepth
-                };
-            }
+                    maxDepth = currentDepth;
+                }
 
-            if (!closedSet.Contains(current.BoardState))
-            {
-                closedSet.Add(current.BoardState);
-                var neighbours = current.GetNeighbours();
+                if (current.BoardState.IsGoal())
+                {
+                    return new Solution
+                    {
+                        Path = GetPath(current),
+                        PathLength = currentDepth,
+                        EncounteredStates = encounteredStates,
+                        ProcessedStates = processedStates,
+                        MaxDepth = maxDepth
+                    };
+                }
+
+                var neighbours = current.GetNeighbours(_heuristicMethod);
+
                 foreach (var neighbor in neighbours)
                 {
-                    if (!closedSet.Contains(neighbor.BoardState))
+                    var n = neighbor;
+                    Debug.WriteLine(n.GScore);
+                    if (closedSet.Contains(n))
+                        continue;
+                    encounteredStates++;
+
+                    if (parentDictionary.ContainsKey(n))
                     {
-                        encounteredStates++;
-                        var fScore = currentMoves + 1 + Heuristic(neighbor.BoardState);
-                        priorityQueue.Enqueue(neighbor, fScore);
+                        var n2 = parentDictionary[n];
+                        if (n.GScore < n2.GScore)
+                        {
+                            parentDictionary[n] = n2;
+                            UpdateChildParentValues(n);
+                        }
                     }
+                    else
+                    {
+                        parentDictionary.Add(n, current);
+                    }
+                    priorityQueue.Add(n);
                 }
-
-                processedStates++;
             }
+
+            return null;
         }
 
-        return null;
-    }
-
-    // Heuristic function that calculates the estimated cost to reach the goal state from the current state
-    private int Heuristic(BoardState state)
-    {
-        if (_heuristicMethod == HeuristicMethod.Hamming)
+        public String GetPath(Node goalNode)
         {
-            var distance = 0;
+            var path = new List<Node>();
+            var currentNode = goalNode;
 
-            for (var y = 0; y < state.Height; y++)
-            for (var x = 0; x < state.Width; x++)
-                if (state.Tiles[x, y] != y * state.Width + x + 1 &&
-                    !(x == state.Width - 1 && y == state.Height - 1 && state.Tiles[x, y] == 0))
-                    distance++;
-
-            return distance;
-        }
-        else // Manhattan
-        {
-            var distance = 0;
-
-            for (var y = 0; y < state.Height; y++)
-            for (var x = 0; x < state.Width; x++)
+            while (currentNode.GScore != 0)
             {
-                var value = state.Tiles[x, y];
-
-                if (value != 0)
-                {
-                    var targetX = (value - 1) % state.Width;
-                    var targetY = (value - 1) / state.Width;
-
-                    distance += Math.Abs(x - targetX) + Math.Abs(y - targetY);
-                }
+                path.Add(currentNode);
+                currentNode = parentDictionary[currentNode];
             }
 
-            return distance;
+            path.Reverse();
+
+            var sb = new StringBuilder();
+            foreach (var node in path)
+            {
+                sb.Append(IPuzzleSolver.GetStringFromDirection(((Direction)node.LastMove)!));
+            }
+
+            return sb.ToString();
+        }
+
+        private void UpdateChildParentValues(Node parentNode)
+        {
+            foreach (var kvp in parentDictionary)
+            {
+                if (kvp.Value.Equals(parentNode))
+                {
+                    parentDictionary[kvp.Key] = parentNode;
+                    UpdateChildParentValues(kvp.Key);
+                }
+            }
         }
     }
 }
