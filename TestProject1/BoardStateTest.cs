@@ -6,29 +6,27 @@ namespace TestProject1;
 [TestFixture]
 public class BoardStateTests
 {
-    public int[,] tiles;
-    public int[,] tiles2;
-
-    
     [SetUp]
     public void Setup()
     {
         // Initialize the BoardState object with test data
-        tiles = new int[,]
+        tiles = new[,]
         {
             { 1, 2, 3 },
             { 4, 5, 6 },
             { 7, 8, 0 }
         };
-        tiles2 = new int[,]
+        tiles2 = new[,]
         {
             { 1, 8, 3 },
             { 4, 5, 6 },
             { 7, 2, 0 }
         };
-
     }
-    
+
+    public int[,] tiles;
+    public int[,] tiles2;
+
     [Test]
     public void AreEqualAndSame()
     {
@@ -37,9 +35,8 @@ public class BoardStateTests
 
         Assert.AreNotEqual(_boardState, _boardState2);
     }
-  
-    
-    
+
+
     /*
     [SetUp]
     public void Setup()

@@ -39,7 +39,7 @@ public interface IPuzzleSolver
                 throw new ArgumentException("Invalid direction string", nameof(direction));
         }
     }
-    
+
     public static string GetStringFromDirection(Direction direction)
     {
         switch (direction)

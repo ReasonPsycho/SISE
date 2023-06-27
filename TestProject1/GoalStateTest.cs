@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
 using SiSE;
 
@@ -6,32 +5,36 @@ namespace TestProject1;
 
 public class GoalStateTest
 {
-    string orginalFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "input.txt");
-    string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "output.txt");
-    string extraInformationFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "extraInformation.txt");
+    private readonly string extraInformationFile =
+        Path.Combine(TestContext.CurrentContext.TestDirectory, "extraInformation.txt");
+
+    private readonly string orginalFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "input.txt");
+    private readonly string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "output.txt");
+
     [SetUp]
     public void Setup()
     {
-        List<string> lines = new List<string>();
-        string firstLine = "4 4";
+        var lines = new List<string>();
+        var firstLine = "4 4";
         lines.Add(firstLine);
-        
-        string secondLine = "1 2 3 4";
+
+        var secondLine = "1 2 3 4";
         lines.Add(secondLine);
 
-        string thirdLine = "5 6 7 8";
+        var thirdLine = "5 6 7 8";
         lines.Add(thirdLine);
 
-        string forthLine = "9 10 11 12";
+        var forthLine = "9 10 11 12";
         lines.Add(forthLine);
 
-        string fifthLine = "13 14 15 0";
+        var fifthLine = "13 14 15 0";
         lines.Add(fifthLine);
 
         File.WriteAllLines(orginalFile, lines);
         using (File.Create(outputFile))
         {
         }
+
         using (File.Create(extraInformationFile))
         {
         }
@@ -40,25 +43,24 @@ public class GoalStateTest
     [Test]
     public void DFS()
     {
-        string[] args = new string[] {"dfs","LRUD",orginalFile,outputFile,extraInformationFile};
-        SiSE.Program.Main(args);
+        string[] args = { "dfs", "LRUD", orginalFile, outputFile, extraInformationFile };
+        Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
-    
+
     [Test]
     public void BFS()
     {
-        string[] args = new string[] {"bfs","LRUD",orginalFile,outputFile,extraInformationFile};
-        SiSE.Program.Main(args);
+        string[] args = { "bfs", "LRUD", orginalFile, outputFile, extraInformationFile };
+        Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
 
     [Test]
     public void AStar()
     {
-        string[] args = new string[] {"astar","hamn",orginalFile,outputFile,extraInformationFile};
-        SiSE.Program.Main(args);
+        string[] args = { "astar", "hamn", orginalFile, outputFile, extraInformationFile };
+        Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
-
 }

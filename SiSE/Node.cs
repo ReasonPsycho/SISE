@@ -1,14 +1,14 @@
 namespace SiSE;
 
-public struct Node: IComparable<Node>
+public struct Node : IComparable<Node>
 {
     public BoardState BoardState;
-    bool processed = false;
+    private bool processed = false;
 
     public int FScore = 0;
-    public  int HScore = 0;
-    public  int GScore = 0;
-    public  Direction? LastMove;
+    public int HScore = 0;
+    public int GScore = 0;
+    public Direction? LastMove;
 
     public Node(int[,] inputTiles)
     {
@@ -18,7 +18,7 @@ public struct Node: IComparable<Node>
         BoardState.EmptyTile = BoardState.GetEmptyTile();
     }
 
-    public Node(int[,] inputTiles, int y, int x,int gScore,HeuristicMethod heuristicMethod,Direction direction)
+    public Node(int[,] inputTiles, int y, int x, int gScore, HeuristicMethod heuristicMethod, Direction direction)
     {
         BoardState.Width = inputTiles.GetLength(0);
         BoardState.Height = inputTiles.GetLength(1);
@@ -36,15 +36,16 @@ public struct Node: IComparable<Node>
         var neighbours = new List<Node>();
         foreach (var direction in Enum.GetValues<Direction>())
         {
-            var state = Move(direction,heuristicMethod);
+            var state = Move(direction, heuristicMethod);
             if (state != null) neighbours.Add((Node)state);
         }
+
         return neighbours;
     }
-    
-    public Node? Move(Direction direction,HeuristicMethod heuristicMethod)
+
+    public Node? Move(Direction direction, HeuristicMethod heuristicMethod)
     {
-        (var emptyX, var emptyY) = BoardState.EmptyTile;
+        var (emptyX, emptyY) = BoardState.EmptyTile;
 
         // Check if the move is possible
         var moveX = emptyX;
@@ -82,9 +83,9 @@ public struct Node: IComparable<Node>
         var newTiles = (int[,])BoardState.Tiles.Clone();
         newTiles[emptyX, emptyY] = BoardState.Tiles[moveX, moveY];
         newTiles[moveX, moveY] = 0;
-        return new Node(newTiles, moveX, moveY,GScore + 1,heuristicMethod,direction);
+        return new Node(newTiles, moveX, moveY, GScore + 1, heuristicMethod, direction);
     }
-    
+
     public void Heuristic(HeuristicMethod heuristicMethod)
     {
         if (heuristicMethod == HeuristicMethod.Hamming)
@@ -120,15 +121,12 @@ public struct Node: IComparable<Node>
             HScore = distance;
         }
     }
-    
+
     public override bool Equals(object obj)
     {
-        if (obj == null || GetType() != obj.GetType())
-        {
-            return false;
-        }
+        if (obj == null || GetType() != obj.GetType()) return false;
 
-        Node other = (Node)obj;
+        var other = (Node)obj;
 
         return BoardState.Equals(other.BoardState);
     }
@@ -143,7 +141,7 @@ public struct Node: IComparable<Node>
     {
         return BoardState.GetHashCode();
     }
-    
+
     public int CompareTo(Node other)
     {
         return FScore.CompareTo(other.FScore);

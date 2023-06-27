@@ -35,16 +35,14 @@ public struct GameState : IEquatable<GameState>
         var neighbours = new List<GameState>();
         if (Moves.Count != 0)
         {
-            Direction? skip = IPuzzleSolver.Reverse(Moves[Moves.Count - 1]);
+            var skip = IPuzzleSolver.Reverse(Moves[Moves.Count - 1]);
 
             foreach (var direction in directions)
-            {
                 if (direction != skip)
                 {
                     var state = Move(direction);
                     if (state != null) neighbours.Add((GameState)state);
                 }
-            }
         }
         else
         {
@@ -68,13 +66,14 @@ public struct GameState : IEquatable<GameState>
             var state = Move(direction);
             if (state != null) neighbours.Add((GameState)state);
         }
+
         return neighbours;
     }
 
     // Move a tile in the given direction (if possible), returning a new board state
     public GameState? Move(Direction direction)
     {
-        (var emptyX, var emptyY) = BoardState.EmptyTile;
+        var (emptyX, emptyY) = BoardState.EmptyTile;
 
         // Check if the move is possible
         var moveX = emptyX;
@@ -114,17 +113,17 @@ public struct GameState : IEquatable<GameState>
         newTiles[moveX, moveY] = 0;
         var newMoves = Moves.ToList();
         newMoves.Add(direction);
-        int? newHashCode = (int?)(HashCode * 23 + direction);
+        var newHashCode = (int?)(HashCode * 23 + direction);
         return new GameState(newTiles, moveX, moveY, newMoves, newHashCode);
     }
-    
+
 
     public override bool Equals(object obj)
     {
         if (obj == null || GetType() != obj.GetType())
             return false;
 
-        GameState other = (GameState)obj;
+        var other = (GameState)obj;
         return GetHashCode() == other.GetHashCode();
     }
 
@@ -136,32 +135,23 @@ public struct GameState : IEquatable<GameState>
     public override int GetHashCode()
     {
         if (HashCode == null)
-        {
             unchecked
             {
-                int hash = 17;
+                var hash = 17;
 
-                foreach (var m in Moves)
-                {
-                    hash = (int)(hash * 23 + m);
-                }
+                foreach (var m in Moves) hash = (int)(hash * 23 + m);
 
                 return hash;
             }
-        }
-        else
-        {
-            return (int)HashCode;
-        }
+
+        return (int)HashCode;
     }
 
     public string GetPath()
     {
         var stringBuilder = new StringBuilder();
-        for (int i = 0; i < Moves.Count; i++)
-        {
+        for (var i = 0; i < Moves.Count; i++)
             stringBuilder.Append(IPuzzleSolver.GetStringFromDirection(Moves[i])); //Cannot be null thought
-        }
 
         return stringBuilder.ToString();
     }

@@ -32,12 +32,12 @@ public static class Program
             startState = new GameState(puzzle);
         }
 
-// initialize variables for search algorithm
+        // initialize variables for search algorithm
         IPuzzleSolver solver;
         var timer = new Stopwatch();
         var maxDepth = 20; // for dfs
 
-// perform search algorithm
+        // perform search algorithm
         switch (algorithm)
         {
             case "bfs":
@@ -58,7 +58,7 @@ public static class Program
         var result = solver.Solve(startState, heuristic);
         timer.Stop();
 
-// write solution to output file
+        // write solution to output file
         using (var sw = File.CreateText(outputPath))
         {
             sw.WriteLine(result?.PathLength ?? -1);
@@ -74,7 +74,7 @@ public static class Program
                 sw.WriteLine(result?.EncounteredStates);
                 sw.WriteLine(result?.ProcessedStates);
                 sw.WriteLine(result?.MaxDepth);
-                sw.WriteLine(((double)(timer.ElapsedTicks / 10L)/1000f).ToString("0.000"));
+                sw.WriteLine(((double)(timer.ElapsedTicks / 10L) / 1000f).ToString("0.000"));
             }
     }
 }

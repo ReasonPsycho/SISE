@@ -1,4 +1,3 @@
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using NUnit.Framework;
 using SiSE;
 
@@ -6,55 +5,61 @@ namespace TestProject1;
 
 public class UltimateTest2x2
 {
-    string orginalFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "input.txt");
-    string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "output.txt");
-    string extraInformationFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "extraInformation.txt");
+    private readonly string extraInformationFile =
+        Path.Combine(TestContext.CurrentContext.TestDirectory, "extraInformation.txt");
+
+    private readonly string orginalFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "input.txt");
+    private readonly string outputFile = Path.Combine(TestContext.CurrentContext.TestDirectory, "output.txt");
+
     [SetUp]
     public void Setup()
     {
-        List<string> lines = new List<string>();
-        string firstLine = "2 2";
+        var lines = new List<string>();
+        var firstLine = "2 2";
         lines.Add(firstLine);
-        
-        string secondLine = "3 2";
+
+        var secondLine = "3 2";
         lines.Add(secondLine);
 
-        string thirdLine = "1 0";
+        var thirdLine = "1 0";
         lines.Add(thirdLine);
 
         File.WriteAllLines(orginalFile, lines);
         using (File.Create(outputFile))
         {
         }
+
         using (File.Create(extraInformationFile))
         {
         }
     }
 
-    [Test, Timeout(60000)]
+    [Test]
+    [Timeout(60000)]
     public void DFS()
     {
-        string[] args = new string[] {"dfs","LRUD",orginalFile,outputFile,extraInformationFile};
-        SiSE.Program.Main(args);
+        string[] args = { "dfs", "LRUD", orginalFile, outputFile, extraInformationFile };
+        Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
-    
-    [Test, Timeout(60000)]
+
+    [Test]
+    [Timeout(60000)]
     public void BFS()
     {
-        string[] args = new string[] {"bfs","LRUD",orginalFile,outputFile,extraInformationFile};
+        string[] args = { "bfs", "LRUD", orginalFile, outputFile, extraInformationFile };
         Console.WriteLine("Test started...");
-        SiSE.Program.Main(args);
+        Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
     }
 
-    
-    [Test, Timeout(60000)]
+
+    [Test]
+    [Timeout(60000)]
     public void AStar()
     {
-        string[] args = new string[] {"astar","hamn",orginalFile,outputFile,extraInformationFile};
-        SiSE.Program.Main(args);
+        string[] args = { "astar", "hamn", orginalFile, outputFile, extraInformationFile };
+        Program.Main(args);
         Console.Write(File.ReadAllText(outputFile) + File.ReadAllText(extraInformationFile));
-    } 
-
+    }
 }

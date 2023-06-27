@@ -18,10 +18,10 @@
             <DependentUpon>IPuzzleSolver.cs</DependentUpon>
         </Compile>
         <Compile Update="GameState.cs">
-          <DependentUpon>BoardState.cs</DependentUpon>
+            <DependentUpon>BoardState.cs</DependentUpon>
         </Compile>
         <Compile Update="Node.cs">
-          <DependentUpon>BoardState.cs</DependentUpon>
+            <DependentUpon>BoardState.cs</DependentUpon>
         </Compile>
     </ItemGroup>
 

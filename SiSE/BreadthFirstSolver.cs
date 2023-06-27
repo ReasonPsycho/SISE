@@ -39,21 +39,25 @@ public class BreadthFirstSolver : IPuzzleSolver
             var current = queue.Dequeue();
             visited.Add(current);
             var neighbors = current.GetNeighbours(_neighborhoodOrder);
-            encounteredStates += neighbors.Count;
+            Debug.WriteLine("-----" + "CURRENT" + "-----");
+            Debug.WriteLine("-----" + current.Moves.Count + "-----");
+            Debug.WriteLine(current.ToString());
+            Debug.WriteLine(GetPath(current));
             foreach (var neighbor in neighbors)
             {
-                Debug.WriteLine("-----" + current.Moves.Count + "-----");
-                Debug.WriteLine(neighbor.ToString());
-                Debug.WriteLine(GetPath(neighbor));
                 maxDepth = Math.Max(maxDepth, neighbor.Moves.Count);
                 if (neighbor.BoardState.IsGoal())
                 {
+                    Debug.WriteLine("-----" + "NEIGHBOR" + "-----");
+                    Debug.WriteLine("-----" + current.Moves.Count + "-----");
+                    Debug.WriteLine(current.ToString());
+                    Debug.WriteLine(GetPath(current));
                     var path = GetPath(neighbor);
                     return new Solution
                     {
                         Path = path,
                         PathLength = path.Length,
-                        EncounteredStates = encounteredStates,
+                        EncounteredStates = visited.Count,
                         ProcessedStates = processedStates,
                         MaxDepth = maxDepth
                     };
@@ -61,13 +65,11 @@ public class BreadthFirstSolver : IPuzzleSolver
 
                 if (!visited.Contains(neighbor))
                 {
-                    if (!queue.Contains(neighbor))
-                    {
-                        queue.Enqueue(neighbor);
-                    }
+                    encounteredStates++;
+                    if (!queue.Contains(neighbor)) queue.Enqueue(neighbor);
                 }
-
             }
+
             processedStates++;
         }
 
@@ -77,10 +79,8 @@ public class BreadthFirstSolver : IPuzzleSolver
     private string GetPath(GameState endState)
     {
         var stringBuilder = new StringBuilder();
-        for (int i = 0; i < endState.Moves.Count; i++)
-        {
+        for (var i = 0; i < endState.Moves.Count; i++)
             stringBuilder.Append(IPuzzleSolver.GetStringFromDirection(endState.Moves[i])); //Cannot be null thought
-        }
         return stringBuilder.ToString();
     }
 }

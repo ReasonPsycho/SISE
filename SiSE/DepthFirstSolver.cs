@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using System.Text;
 
 namespace SiSE;
 
@@ -11,6 +10,10 @@ public class DepthFirstSolver : IPuzzleSolver
     public DepthFirstSolver(string neighborhoodOrder, int maxDepth)
     {
         _neighborhoodOrder = IPuzzleSolver.GetDirectionsOrder(neighborhoodOrder);
+        for (int i = 0; i < 4; i++)
+        {
+            _neighborhoodOrder[i] = (Direction)IPuzzleSolver.Reverse(_neighborhoodOrder[i]);
+        }
         _maxDepth = maxDepth;
     }
 
@@ -29,7 +32,7 @@ public class DepthFirstSolver : IPuzzleSolver
             var current = edge.Pop();
             var currentDepth = current.Moves.Count;
             if (maxDepth < current.Moves.Count) maxDepth = currentDepth;
-            
+
             if (current.BoardState.IsGoal())
             {
                 var path = current.GetPath();
@@ -40,20 +43,17 @@ public class DepthFirstSolver : IPuzzleSolver
                 solution.ProcessedStates = processedStates;
                 return solution;
             }
-            
+
             visited.Add(current);
-            
             var neighbors = current.GetNeighbours(_neighborhoodOrder);
 
-            neighbors.Reverse(); // THE last shall be the first!
-            encounteredStates += neighbors.Count;
-
             foreach (var neighbor in neighbors)
-            {
                 if (!visited.Contains(neighbor))
                 {
-                    // Store the parent of each neighbor
-                    Debug.WriteLine("-----" + current.Moves.Count + "-----");
+                    encounteredStates++;
+
+                    Debug.WriteLine("-----" + "NEIGHBOR" + "-----");
+                    Debug.WriteLine("-----" + neighbor.Moves.Count + "-----");
                     Debug.WriteLine(neighbor.ToString());
                     Debug.WriteLine(neighbor.GetPath());
 
@@ -63,13 +63,10 @@ public class DepthFirstSolver : IPuzzleSolver
                         edge.Push(neighbor);
                     }
                 }
-            }
-            processedStates++;
 
+            processedStates++;
         }
 
         return null;
     }
-
-
 }
